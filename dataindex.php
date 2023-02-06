@@ -6,7 +6,12 @@ if (isset($_GET['delete'])) {
     $stm->execute([$_GET['delete']]);
 }
 
-$result = $db -> query("SELECT * FROM employees");
+$result = $db -> query('
+SELECT 
+    `employees`.*,
+    `positions`.`name` as `position_name` 
+FROM `employees`
+    LEFT JOIN positions ON `employees`.`positions_id` = `positions`.`id`');
 $data = $result -> fetchAll(PDO::FETCH_ASSOC);
 
 $info = $db -> query("SELECT * FROM positions");
@@ -26,6 +31,7 @@ $posdata = $info -> fetchAll(PDO::FETCH_ASSOC);
 <body>
     <div class="container">
         <div class="row">
+            <?php include_once 'category_picker.php'?>
             <div class="col-md-12 mt-5">
                 <div class="card border-danger">
                     <div class="card-header text-center fw-bold bg-danger-subtle">Darbuotojai</div>
@@ -39,6 +45,7 @@ $posdata = $info -> fetchAll(PDO::FETCH_ASSOC);
                                 <th class="text-center">Vardas</th>
                                 <th class="text-center">Pavardė</th>
                                 <th class="text-center">Atlyginimas (EUR,€)</th>
+                                <th class="text-center">Pareigos</th>
                             </tr>
                             </thead>
                             <?php foreach ($data as $datum){ ?>
@@ -46,6 +53,7 @@ $posdata = $info -> fetchAll(PDO::FETCH_ASSOC);
                                     <td class="text-center"><?=$datum['name']?></td>
                                     <td class="text-center"><?=$datum['surname']?></td>
                                     <td class="text-center"><?=$datum['salary']/100?></td>
+                                    <td class="text-center"><?=$datum['position_name']?></td>
                                     <td><a class="btn btn-dark" href="more.php?id=<?=$datum['id']?>">More</a></td>
                                     <td><a class="btn btn-success" href="update.php?id=<?=$datum['id']?>">Edit</a></td>
                                     <td><a class="btn btn-danger" href="dataindex.php?delete=<?=$datum['id']?>">Delete</a></td>

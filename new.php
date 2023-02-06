@@ -2,11 +2,15 @@
 require_once 'database.php';
 
 if (isset($_POST['add'])){
-    $stm=$db->prepare("INSERT INTO employees (name, surname, gender, phone, birthday, education, salary) VALUES (?, ?, ?, ?, ?, ?, ?)");
-    $stm->execute([$_POST['name'], $_POST['surname'], $_POST['gender'], $_POST['phone'], $_POST['birthday'], $_POST['education'], $_POST['salary']]);
+    $stm=$db->prepare("INSERT INTO employees (name, surname, gender, phone, birthday, education, salary, positions_id) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
+    $stm->execute([$_POST['name'], $_POST['surname'], $_POST['gender'], $_POST['phone'], $_POST['birthday'], $_POST['education'], $_POST['salary'], $_POST['positions_id']]);
     header("location: dataindex.php");
     die();
 }
+
+$stm=$db->prepare("SELECT id,name FROM positions");
+$stm->execute([]);
+$positions=$stm->fetchAll(PDO::FETCH_ASSOC);
 
 ?>
 
@@ -57,7 +61,19 @@ if (isset($_POST['add'])){
                             <label class="form-label">Atlyginimas (EUR,€):</label>
                             <input type="text" class="form-control" name="salary">
                         </div>
-                        <button class="btn btn-primary" name="add" value="1">Add</button>
+                        <div class="mb-3">
+                            <label class="form-label">Pareigos: </label>
+                               <select class="form-label" name="positions_id">
+                                   <?php foreach ($positions as $position) {?>
+                                        <option value="<?=$position['id']?>">
+                                            <?=$position['name']?>
+                                        </option>
+                                   <?php } ?>
+                               </select>
+                        </div>
+                        <div class="mb-3">
+                            <button class="mb-3 btn btn-primary" name="add" value="1">Add</button>
+                        </div>
                     </form>
                 </div>
             </div>

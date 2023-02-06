@@ -7,11 +7,16 @@ $stm->execute([$id]);
 $data=$stm->fetch(PDO::FETCH_ASSOC);
 
 if (isset($_POST['update'])) {
-    $stm = $db->prepare("UPDATE employees SET name=?, surname=?, gender=?, phone=?, birthday=?, education=?, salary=? WHERE id=?");
-    $stm->execute([$_POST['name'], $_POST['surname'], $_POST['gender'], $_POST['phone'], $_POST['birthday'], $_POST['education'], $_POST['salary'], $id]);
+    $stm = $db->prepare("UPDATE employees SET name=?, surname=?, gender=?, phone=?, birthday=?, education=?, salary=?, positions_id=? WHERE id=?");
+    $stm->execute([$_POST['name'], $_POST['surname'], $_POST['gender'], $_POST['phone'], $_POST['birthday'], $_POST['education'], $_POST['salary'], $_POST['positions_id'], $id]);
     header("location: dataindex.php");
     die();
 }
+
+$stm=$db->prepare("SELECT id,name FROM positions");
+$stm->execute([]);
+$positions=$stm->fetchAll(PDO::FETCH_ASSOC);
+
 ?>
 
 <!doctype html>
@@ -60,6 +65,17 @@ if (isset($_POST['update'])) {
                         <div class="mb-3">
                             <label class="form-label">Atlyginimas (EUR,€):</label>
                             <input type="text" class="form-control" name="salary" value="<?=$data['salary']?>">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Pareigos: </label>
+                            <select class="form-label" name="positions_id">
+                                <?php foreach ($positions as $position) {?>
+                                    <option value="<?=$position['id']?>"
+                                        <?=$data['positions_id']==$position['id']? 'selected' : '' ?>>
+                                        <?=$position['name']?>
+                                    </option>
+                                <?php } ?>
+                            </select>
                         </div>
                         <button class="btn btn-primary" name="update" value="1">Edit</button>
                     </form>
